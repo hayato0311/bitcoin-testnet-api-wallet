@@ -19,7 +19,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
+            children: [
               Container(
                 width: 300,
                 margin: const EdgeInsets.only(bottom: 10),
