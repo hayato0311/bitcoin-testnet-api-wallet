@@ -1,4 +1,4 @@
-// import 'dart:math';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -11,32 +11,51 @@ class TransactionHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // int inputSatoshi = 0;
-    // int outputSatoshi = 0;
-    // String targetAddress = '';
-    // print(txHistory['outputs']);
-    // print('input:');
-    // txHistory['inputs'].forEach((input) {
-    //   if (input['addresses'].contains(myAddress)) {
-    //     print(input);
-    //     outputSatoshi = input['value'];
-    //   }
-    // });
-    // print('output:');
-    // txHistory['outputs'].forEach((output) {
-    //   if (output['addresses'].contains(myAddress)) {
-    //     print(output);
-    //     outputSatoshi = output['value'];
-    //   }
-    // });
+    int inputSatoshi = 0;
+    int outputSatoshi = 0;
+    bool sent = false;
+    String txType = 'Received';
+    String partnerAddress = '';
+    String partnerAddressLabel = '';
 
-    // double inputBtc = inputSatoshi / pow(10, 8);
-    // double outputBtc = outputSatoshi / pow(10, 8);
-    // String status = 'Sent';
-    // double value = outputBtc - inputBtc;
-    // if (value > 0) {
-    //   status = 'Received';
-    // }
+    txHistory['inputs'].forEach((input) {
+      if (input['addresses'].contains(myAddress)) {
+        sent = true;
+        inputSatoshi = input['output_value'];
+      } else {
+        partnerAddress = input['addresses'][0];
+      }
+    });
+    txHistory['outputs'].forEach((output) {
+      if (output['addresses'].contains(myAddress)) {
+        outputSatoshi = output['value'];
+      } else {
+        if (sent) {
+          if (output['addresses'].length != 1) {
+            debugPrint('error');
+          }
+          partnerAddress = output['addresses'][0];
+        }
+      }
+    });
+    if (sent) {
+      txType = 'Sent';
+      partnerAddressLabel =
+          'To: ${partnerAddress.substring(0, 5)}...${partnerAddress.substring(partnerAddress.length - 4)}';
+    } else {
+      txType = 'Received';
+      partnerAddressLabel =
+          'From: ${partnerAddress.substring(0, 5)}...${partnerAddress.substring(partnerAddress.length - 4)}';
+    }
+
+    int valueSatoshi = outputSatoshi - inputSatoshi;
+    double valueBtc = valueSatoshi / pow(10, 8);
+
+    int confirmationsCount = txHistory['confirmations'];
+    String status = 'success';
+    if (confirmationsCount < 6) {
+      status = 'in proggress';
+    }
 
     return Container(
       margin: const EdgeInsets.only(top: 10, bottom: 10),
@@ -46,16 +65,29 @@ class TransactionHistory extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(right: 5, left: 5),
             child: Column(
-              children: const [
+              children: [
                 Text(
-                  'Received',
-                  style: TextStyle(
+                  status,
+                  style: const TextStyle(
+                    fontSize: 15,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(right: 5, left: 5),
+            child: Column(
+              children: [
+                Text(
+                  txType,
+                  style: const TextStyle(
                     fontSize: 15,
                   ),
                 ),
                 Text(
-                  'From: tb1q2...r89z4',
-                  style: TextStyle(
+                  partnerAddressLabel,
+                  style: const TextStyle(
                     fontSize: 10,
                   ),
                 ),
@@ -66,9 +98,9 @@ class TransactionHistory extends StatelessWidget {
             margin: const EdgeInsets.only(right: 5, left: 5),
             child: Column(
               children: [
-                const Text(
-                  '0.0001 BTC',
-                  style: TextStyle(
+                Text(
+                  '$valueBtc BTC',
+                  style: const TextStyle(
                     fontSize: 15,
                   ),
                 ),

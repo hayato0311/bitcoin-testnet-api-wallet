@@ -112,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(top: 20, left: 50, right: 50),
+                  margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
                   child: Column(
                     children: [
                       for (int i = 0; i < txCount; i++) ...{
