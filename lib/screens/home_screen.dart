@@ -1,12 +1,56 @@
+import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import './send_input_screen.dart';
 import './receive_screen.dart';
 
 import '../widgets/transaction_history.dart';
 
-class HomeScreen extends StatelessWidget {
+const String testnetAddress = 'mpdzWcEn2gKbtcz9PhHH9cdbw3E5Z7Qo4V';
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late int finalBalanceSatoshi = 0;
+  late double finalBalanceBtc = 0;
+  late int txCount = 0;
+  late List txHistories = [];
+
+  Future<void> getAccountData(address, {testnet = false}) async {
+    late String environment;
+    if (testnet) {
+      environment = 'test3';
+    } else {
+      environment = 'main';
+    }
+    var response = await http.get(
+      Uri.https(
+        'api.blockcypher.com',
+        '/v1/btc/$environment/addrs/$address/full',
+      ),
+    );
+    var jsonResponse = json.decode(response.body);
+
+    setState(() {
+      finalBalanceSatoshi = jsonResponse['final_balance'];
+      finalBalanceBtc = finalBalanceSatoshi / pow(10, 8);
+      txCount = jsonResponse['n_tx'];
+      txHistories = jsonResponse['txs'];
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getAccountData(testnetAddress, testnet: true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +69,8 @@ class HomeScreen extends StatelessWidget {
                     color: Colors.black,
                     shape: BoxShape.circle,
                   ),
-                  child: const Center(
-                    child: Text("100 BTC"),
+                  child: Center(
+                    child: Text("$finalBalanceBtc BTC"),
                   ),
                 ),
                 Container(
@@ -68,14 +112,15 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(top: 20, left: 100, right: 100),
+                  margin: const EdgeInsets.only(top: 20, left: 50, right: 50),
                   child: Column(
-                    children: const [
-                      TransactionHistory(),
-                      TransactionHistory(),
-                      TransactionHistory(),
-                      TransactionHistory(),
-                      TransactionHistory(),
+                    children: [
+                      for (int i = 0; i < txCount; i++) ...{
+                        TransactionHistory(
+                          myAddress: testnetAddress,
+                          txHistory: txHistories[i],
+                        )
+                      },
                     ],
                   ),
                 ),
