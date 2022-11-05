@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './screens/home_screen.dart';
-import 'screens/send_input_screen.dart';
+import './screens/send_input_screen.dart';
 import './screens/send_confirmation_screen.dart';
 import './screens/send_result_screen.dart';
 import './screens/receive_screen.dart';

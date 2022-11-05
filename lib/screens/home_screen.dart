@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'send_input_screen.dart';
+import './send_input_screen.dart';
 import './receive_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -9,7 +9,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.grey,
       body: SafeArea(
         child: Center(
           child: Column(
