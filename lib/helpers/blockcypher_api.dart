@@ -76,7 +76,10 @@ Map<String, dynamic> txHistoryProcessing(myAddress, txHistory) {
     status = 'in proggress';
   }
   // TODO: process this DateTime format.
-  String confirmedAt = txHistory['confirmed'];
+  String confirmedAt = '';
+  if (txHistory.keys.contains('confirmed')) {
+    confirmedAt = txHistory['confirmed'];
+  }
 
   return <String, dynamic>{
     'valueSatoshi': valueSatoshi,
