@@ -23,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late double finalBalanceBtc = 0;
   late int txCount = 0;
   late List txHistories = [];
+  bool isBtc = true;
 
   Future<void> getAccountData(address, {testnet = false}) async {
     var jsonResponse =
@@ -51,21 +52,57 @@ class _HomeScreenState extends State<HomeScreen> {
             await getAccountData(testnetAddress, testnet: true);
           },
           child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
                     width: 300,
-                    height: 300,
-                    margin: const EdgeInsets.only(bottom: 100),
+                    height: 200,
+                    margin: const EdgeInsets.only(top: 30, bottom: 50),
                     decoration: const BoxDecoration(
                       color: Colors.black,
-                      shape: BoxShape.circle,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(30.0),
+                      ),
                     ),
                     // TODO: switch btc and satoshi when tapped
                     child: Center(
-                      child: Text("$finalBalanceBtc BTC"),
+                      child: SizedBox(
+                        width: 300 - 30,
+                        height: 200 - 30,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            elevation: 0,
+                            // shadowColor: Colors.black,
+                            // animationDuration: const Duration(seconds: 0),
+                          ),
+                          child: Text(
+                            isBtc
+                                ? "$finalBalanceBtc BTC"
+                                : "$finalBalanceSatoshi satoshi",
+                            style: const TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isBtc = !isBtc;
+                            });
+                          },
+                        ),
+                      ),
+                      // child: Text(
+                      //   isBtc
+                      //       ? "$finalBalanceBtc BTC"
+                      //       : "$finalBalanceSatoshi satoshi",
+                      //   style: const TextStyle(
+                      //     fontSize: 30,
+                      //     fontWeight: FontWeight.bold,
+                      //   ),
+                      // ),
                     ),
                   ),
                   Container(
@@ -107,7 +144,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                    margin: const EdgeInsets.only(top: 40, left: 20, right: 20),
+                    child: const Text(
+                      'Histories',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 5, left: 20, right: 20),
+                    child: const Divider(
+                      height: 20,
+                      thickness: 0.5,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10, left: 20, right: 20),
                     child: Column(
                       children: [
                         for (int i = 0; i < txCount; i++) ...{
