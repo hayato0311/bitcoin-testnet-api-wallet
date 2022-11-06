@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class TransactionHistory extends StatelessWidget {
@@ -11,52 +9,6 @@ class TransactionHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int inputSatoshi = 0;
-    int outputSatoshi = 0;
-    bool sent = false;
-    String txType = 'Received';
-    String partnerAddress = '';
-    String partnerAddressLabel = '';
-
-    txHistory['inputs'].forEach((input) {
-      if (input['addresses'].contains(myAddress)) {
-        sent = true;
-        inputSatoshi = input['output_value'];
-      } else {
-        partnerAddress = input['addresses'][0];
-      }
-    });
-    txHistory['outputs'].forEach((output) {
-      if (output['addresses'].contains(myAddress)) {
-        outputSatoshi = output['value'];
-      } else {
-        if (sent) {
-          if (output['addresses'].length != 1) {
-            debugPrint('error');
-          }
-          partnerAddress = output['addresses'][0];
-        }
-      }
-    });
-    if (sent) {
-      txType = 'Sent';
-      partnerAddressLabel =
-          'To: ${partnerAddress.substring(0, 5)}...${partnerAddress.substring(partnerAddress.length - 4)}';
-    } else {
-      txType = 'Received';
-      partnerAddressLabel =
-          'From: ${partnerAddress.substring(0, 5)}...${partnerAddress.substring(partnerAddress.length - 4)}';
-    }
-
-    int valueSatoshi = outputSatoshi - inputSatoshi;
-    double valueBtc = valueSatoshi / pow(10, 8);
-
-    int confirmationsCount = txHistory['confirmations'];
-    String status = 'success';
-    if (confirmationsCount < 6) {
-      status = 'in proggress';
-    }
-
     return Container(
       margin: const EdgeInsets.only(top: 10, bottom: 10),
       child: Row(
@@ -67,7 +19,7 @@ class TransactionHistory extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  status,
+                  txHistory['status'],
                   style: const TextStyle(
                     fontSize: 15,
                   ),
@@ -80,13 +32,13 @@ class TransactionHistory extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  txType,
+                  txHistory['txType'],
                   style: const TextStyle(
                     fontSize: 15,
                   ),
                 ),
                 Text(
-                  partnerAddressLabel,
+                  txHistory['partnerAddressLabel'],
                   style: const TextStyle(
                     fontSize: 10,
                   ),
@@ -99,13 +51,13 @@ class TransactionHistory extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  '$valueBtc BTC',
+                  '${txHistory['valueBtc']} BTC',
                   style: const TextStyle(
                     fontSize: 15,
                   ),
                 ),
                 Text(
-                  txHistory['confirmed'],
+                  txHistory['confirmedAt'],
                   style: const TextStyle(
                     fontSize: 10,
                   ),

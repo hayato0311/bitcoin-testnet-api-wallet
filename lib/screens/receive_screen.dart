@@ -16,7 +16,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
   @override
   void initState() {
     super.initState();
-    addressController.text = dotenv.env['pubkey']!;
+    addressController.text = dotenv.env['PUBKEY']!;
   }
 
   @override

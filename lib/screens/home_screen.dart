@@ -1,14 +1,15 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import './send_input_screen.dart';
 import './receive_screen.dart';
 
 import '../widgets/transaction_history.dart';
 
-const String testnetAddress = 'mpdzWcEn2gKbtcz9PhHH9cdbw3E5Z7Qo4V';
+import '../helpers/blockcypher_api.dart';
+
+final String testnetAddress = dotenv.get('PUBKEY');
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,19 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late List txHistories = [];
 
   Future<void> getAccountData(address, {testnet = false}) async {
-    late String environment;
-    if (testnet) {
-      environment = 'test3';
-    } else {
-      environment = 'main';
-    }
-    var response = await http.get(
-      Uri.https(
-        'api.blockcypher.com',
-        '/v1/btc/$environment/addrs/$address/full',
-      ),
-    );
-    var jsonResponse = json.decode(response.body);
+    var jsonResponse =
+        await BlockcypherApi.getAccountFullData(address, testnet: testnet);
 
     setState(() {
       finalBalanceSatoshi = jsonResponse['final_balance'];
@@ -118,7 +108,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       for (int i = 0; i < txCount; i++) ...{
                         TransactionHistory(
                           myAddress: testnetAddress,
-                          txHistory: txHistories[i],
+                          txHistory: txHistoryProcessing(
+                            testnetAddress,
+                            txHistories[i],
+                          ),
                         )
                       },
                     ],
