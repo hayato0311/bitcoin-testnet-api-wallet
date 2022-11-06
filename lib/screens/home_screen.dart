@@ -46,79 +46,84 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  width: 300,
-                  height: 300,
-                  margin: const EdgeInsets.only(bottom: 100),
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    shape: BoxShape.circle,
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await getAccountData(testnetAddress, testnet: true);
+          },
+          child: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 300,
+                    height: 300,
+                    margin: const EdgeInsets.only(bottom: 100),
+                    decoration: const BoxDecoration(
+                      color: Colors.black,
+                      shape: BoxShape.circle,
+                    ),
+                    // TODO: switch btc and satoshi when tapped
+                    child: Center(
+                      child: Text("$finalBalanceBtc BTC"),
+                    ),
                   ),
-                  // TODO: switch btc and satoshi when tapped
-                  child: Center(
-                    child: Text("$finalBalanceBtc BTC"),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(right: 20, left: 20),
-                        child: SizedBox(
-                          width: 100,
-                          height: 50,
-                          child: ElevatedButton(
-                            child: const Text('Send'),
-                            onPressed: () {
-                              Navigator.of(context).pushNamed(
-                                SendInputScreen.routeName,
-                              );
-                            },
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(right: 20, left: 20),
+                          child: SizedBox(
+                            width: 100,
+                            height: 50,
+                            child: ElevatedButton(
+                              child: const Text('Send'),
+                              onPressed: () {
+                                Navigator.of(context).pushNamed(
+                                  SendInputScreen.routeName,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(right: 20, left: 20),
-                        child: SizedBox(
-                          width: 100,
-                          height: 50,
-                          child: ElevatedButton(
-                            child: const Text('Receive'),
-                            onPressed: () {
-                              Navigator.of(context).pushNamed(
-                                ReceiveScreen.routeName,
-                              );
-                            },
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                  child: Column(
-                    children: [
-                      for (int i = 0; i < txCount; i++) ...{
-                        TransactionHistory(
-                          myAddress: testnetAddress,
-                          txHistory: txHistoryProcessing(
-                            testnetAddress,
-                            txHistories[i],
+                        Container(
+                          margin: const EdgeInsets.only(right: 20, left: 20),
+                          child: SizedBox(
+                            width: 100,
+                            height: 50,
+                            child: ElevatedButton(
+                              child: const Text('Receive'),
+                              onPressed: () {
+                                Navigator.of(context).pushNamed(
+                                  ReceiveScreen.routeName,
+                                );
+                              },
+                            ),
                           ),
                         )
-                      },
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  Container(
+                    margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                    child: Column(
+                      children: [
+                        for (int i = 0; i < txCount; i++) ...{
+                          TransactionHistory(
+                            myAddress: testnetAddress,
+                            txHistory: txHistoryProcessing(
+                              testnetAddress,
+                              txHistories[i],
+                            ),
+                          )
+                        },
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
