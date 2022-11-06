@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 class TransactionHistory extends StatelessWidget {
-  const TransactionHistory({super.key});
+  final dynamic myAddress;
+  final dynamic txHistory;
+
+  const TransactionHistory(
+      {required this.myAddress, required this.txHistory, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,16 +17,29 @@ class TransactionHistory extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(right: 5, left: 5),
             child: Column(
-              children: const [
+              children: [
                 Text(
-                  'Receive',
-                  style: TextStyle(
+                  txHistory['status'],
+                  style: const TextStyle(
+                    fontSize: 15,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(right: 5, left: 5),
+            child: Column(
+              children: [
+                Text(
+                  txHistory['txType'],
+                  style: const TextStyle(
                     fontSize: 15,
                   ),
                 ),
                 Text(
-                  'From: address',
-                  style: TextStyle(
+                  txHistory['partnerAddressLabel'],
+                  style: const TextStyle(
                     fontSize: 10,
                   ),
                 ),
@@ -32,16 +49,16 @@ class TransactionHistory extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(right: 5, left: 5),
             child: Column(
-              children: const [
+              children: [
                 Text(
-                  '+0.001 BTC',
-                  style: TextStyle(
+                  '${txHistory['valueBtc']} BTC',
+                  style: const TextStyle(
                     fontSize: 15,
                   ),
                 ),
                 Text(
-                  '2022-11-5',
-                  style: TextStyle(
+                  txHistory['confirmedAt'],
+                  style: const TextStyle(
                     fontSize: 10,
                   ),
                 ),
