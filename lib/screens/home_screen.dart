@@ -1,15 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import './send_input_screen.dart';
 import './receive_screen.dart';
+import './enter_address_screen.dart';
 
 import '../widgets/transaction_history.dart';
 
 import '../helpers/blockcypher_api.dart';
-
-final String testnetAddress = dotenv.get('PUBKEY');
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,23 +22,32 @@ class _HomeScreenState extends State<HomeScreen> {
   late int txCount = 0;
   late List txHistories = [];
   bool isBtc = true;
+  late String address = '';
 
-  Future<void> getAccountData(address, {testnet = false}) async {
+  Future<void> getAccountData({testnet = false}) async {
+    if (address == '') {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      setState(() {
+        address = prefs.getString('address') ?? '';
+      });
+    }
     var jsonResponse =
         await BlockcypherApi.getAccountFullData(address, testnet: testnet);
 
-    setState(() {
-      finalBalanceSatoshi = jsonResponse['final_balance'];
-      finalBalanceBtc = finalBalanceSatoshi / pow(10, 8);
-      txCount = jsonResponse['final_n_tx'];
-      txHistories = jsonResponse['txs'];
-    });
+    if (address != '') {
+      setState(() {
+        finalBalanceSatoshi = jsonResponse['final_balance'];
+        finalBalanceBtc = finalBalanceSatoshi / pow(10, 8);
+        txCount = jsonResponse['final_n_tx'];
+        txHistories = jsonResponse['txs'];
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    getAccountData(testnetAddress, testnet: true);
+    getAccountData(testnet: true);
   }
 
   @override
@@ -49,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
-            await getAccountData(testnetAddress, testnet: true);
+            await getAccountData(testnet: true);
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -101,16 +108,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Container(
                           margin: const EdgeInsets.only(right: 20, left: 20),
-                          child: SizedBox(
+                          child: const SizedBox(
                             width: 100,
                             height: 50,
                             child: ElevatedButton(
-                              child: const Text('Send'),
-                              onPressed: () {
-                                Navigator.of(context).pushNamed(
-                                  SendInputScreen.routeName,
-                                );
-                              },
+                              onPressed: null,
+                              child: Text('Send'),
+                              // onPressed: () {
+                              //   Navigator.of(context).pushNamed(
+                              //     SendInputScreen.routeName,
+                              //   );
+                              // },
                             ),
                           ),
                         ),
@@ -156,9 +164,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         for (int i = 0; i < txCount; i++) ...{
                           TransactionHistory(
-                            myAddress: testnetAddress,
+                            myAddress: address,
                             txHistory: txHistoryProcessing(
-                              testnetAddress,
+                              address,
                               txHistories[i],
                             ),
                           )
@@ -166,6 +174,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
+                  Container(
+                    margin: const EdgeInsets.only(right: 20, left: 20),
+                    child: SizedBox(
+                      width: 300,
+                      height: 50,
+                      child: ElevatedButton(
+                        child: const Text('Change Account'),
+                        onPressed: () {
+                          Navigator.of(context).pushNamed(
+                            EnterAddressScreen.routeName,
+                          );
+                        },
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
