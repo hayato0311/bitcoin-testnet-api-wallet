@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReceiveScreen extends StatefulWidget {
   const ReceiveScreen({super.key});
@@ -12,11 +12,20 @@ class ReceiveScreen extends StatefulWidget {
 
 class _ReceiveScreenState extends State<ReceiveScreen> {
   final addressController = TextEditingController();
+  String address = '';
 
   @override
   void initState() {
     super.initState();
-    addressController.text = dotenv.env['PUBKEY']!;
+    setAddress();
+  }
+
+  Future<void> setAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      address = prefs.getString('address') ?? '';
+      addressController.text = address;
+    });
   }
 
   @override

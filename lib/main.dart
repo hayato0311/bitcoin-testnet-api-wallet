@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import './screens/home_screen.dart';
+import './screens/enter_address_screen.dart';
+import './screens/receive_screen.dart';
 import './screens/send_input_screen.dart';
 import './screens/send_confirmation_screen.dart';
 import './screens/send_result_screen.dart';
-import './screens/receive_screen.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'reliet',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
             const SendConfirmationScreen(),
         SendResultScreen.routeName: (ctx) => const SendResultScreen(),
         ReceiveScreen.routeName: (ctx) => const ReceiveScreen(),
+        EnterAddressScreen.routeName: (ctx) => const EnterAddressScreen(),
       },
     );
   }
