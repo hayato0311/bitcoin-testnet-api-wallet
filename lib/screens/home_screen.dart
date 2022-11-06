@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       finalBalanceSatoshi = jsonResponse['final_balance'];
       finalBalanceBtc = finalBalanceSatoshi / pow(10, 8);
-      txCount = jsonResponse['n_tx'];
+      txCount = jsonResponse['final_n_tx'];
       txHistories = jsonResponse['txs'];
     });
   }
@@ -59,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.black,
                     shape: BoxShape.circle,
                   ),
+                  // TODO: switch btc and satoshi when tapped
                   child: Center(
                     child: Text("$finalBalanceBtc BTC"),
                   ),
